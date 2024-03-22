@@ -31,8 +31,10 @@ jobs:
              -H "Content-Type:application/json" \
              -d "{
                   sysparm_quantity: 1,
-                  \"vm_count\": \"${{ env.VM_COUNT }}\",
-                  \"vm_size\": \"${{ env.VM_SIZE }}\"
+                  variables: {
+                    \"vm_count\": \"${{ env.VM_COUNT }}\",
+                    \"vm_size\": \"${{ env.VM_SIZE }}\"
+                  }
                  }"
       env:
         SERVICENOW_INSTANCE: ${{ secrets.SERVICE_NOW_INSTANCE }}
