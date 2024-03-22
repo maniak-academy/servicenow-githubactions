@@ -26,7 +26,7 @@ jobs:
 
     - name: Update and Order Catalog Item in ServiceNow
       run: |
-        curl -X PATCH "https://${{ secrets.SERVICE_NOW_INSTANCE }}/api/sn_sc/servicecatalog/items/d101217d973002103671341e6253afdf/versioning/checkout" \
+        curl -X POST "https://${{ secrets.SERVICE_NOW_INSTANCE }}/api/sn_sc/servicecatalog/items/d101217d973002103671341e6253afdf/versioning/checkout" \
              -u ${{ secrets.SERVICE_NOW_USERNAME }}:${{ secrets.SERVICE_NOW_PASSWORD }} \
              -H "Accept:application/json" \
              -H "Content-Type:application/json" \
