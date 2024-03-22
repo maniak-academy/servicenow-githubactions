@@ -1,4 +1,4 @@
-name: Create ServiceNow Record
+name: Update and Order ServiceNow Catalog Item
 
 on:
   push:
@@ -6,25 +6,34 @@ on:
       - main
 
 jobs:
-  create-servicenow-record:
+  update-and-order-catalog-item:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Create Incident in ServiceNow
-        id: create_incident
-        env:
-          SERVICE_NOW_INSTANCE: ${{ secrets.SERVICE_NOW_INSTANCE }}
-          SERVICE_NOW_USERNAME: ${{ secrets.SERVICE_NOW_USERNAME }}
-          SERVICE_NOW_PASSWORD: ${{ secrets.SERVICE_NOW_PASSWORD }}
-        run: |
-          response=$(curl -X POST "https://${SERVICE_NOW_INSTANCE}.service-now.com/api/now/table/incident" \
-          --user "${SERVICE_NOW_USERNAME}:${SERVICE_NOW_PASSWORD}" \
-          --header "Accept:application/json" \
-          --header "Content-Type:application/json" \
-          --data '{"short_description": "Incident created via GitHub Actions", "urgency": "2", "impact": "2", "category": "software"}')
-          echo "::set-output name=incident_response::$response"
-      - name: Install jq
-        run: sudo apt-get install jq
-      - name: Log Incident Creation Response
-        run: |
-          echo "Incident Response: ${{ steps.create_incident.outputs.incident_response }}"
-          echo "${{ steps.create_incident.outputs.incident_response }}" | jq .
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install jq
+      run: sudo apt-get install jq
+
+    - name: Read values from terraform.auto.tfvars
+      id: readvars
+      run: |
+        echo "VM_COUNT=$(jq -r '.vm_count' terraform.auto.tfvars)" >> $GITHUB_ENV
+        echo "VM_SIZE=$(jq -r '.vm_size' terraform.auto.tfvars)" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Update and Order Catalog Item in ServiceNow
+      run: |
+        curl -X PATCH "https://${{ secrets.SERVICENOW_INSTANCE }}/api/now/table/catalog_item/YOUR_CATALOG_ITEM_ID" \
+             -u ${{ secrets.SERVICENOW_USERNAME }}:${{ secrets.SERVICENOW_PASSWORD }} \
+             -H "Accept:application/json" \
+             -H "Content-Type:application/json" \
+             -d "{
+                  \"vm_count\": \"${{ env.VM_COUNT }}\",
+                  \"vm_size\": \"${{ env.VM_SIZE }}\"
+                 }"
+      env:
+        SERVICENOW_INSTANCE: ${{ secrets.SERVICENOW_INSTANCE }}
+        SERVICENOW_USERNAME: ${{ secrets.SERVICENOW_USERNAME }}
+        SERVICENOW_PASSWORD: ${{ secrets.SERVICENOW_PASSWORD }}
