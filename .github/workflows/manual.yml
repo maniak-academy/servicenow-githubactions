@@ -8,21 +8,15 @@ on:
 jobs:
   create-servicenow-record:
     runs-on: ubuntu-latest
-    outputs:
-      incidentResponse: ${{ steps.create_incident.outputs.incident_response }}
     steps:
       - name: Create Incident in ServiceNow
-        id: create_incident
         env:
           SERVICE_NOW_INSTANCE: ${{ secrets.SERVICE_NOW_INSTANCE }}
           SERVICE_NOW_USERNAME: ${{ secrets.SERVICE_NOW_USERNAME }}
           SERVICE_NOW_PASSWORD: ${{ secrets.SERVICE_NOW_PASSWORD }}
         run: |
-          response=$(curl -X POST "https://${SERVICE_NOW_INSTANCE}.service-now.com/api/now/table/incident" \
+          curl -X POST "https://${SERVICE_NOW_INSTANCE}.service-now.com/api/now/table/incident" \
           --user "${SERVICE_NOW_USERNAME}:${SERVICE_NOW_PASSWORD}" \
           --header "Accept:application/json" \
           --header "Content-Type:application/json" \
-          --data '{"short_description": "This is a test incident created by GitHub Actions.","urgency":"2","impact":"2"}')
-          echo "::set-output name=incident_response::$response"
-      - name: Display Incident Creation Response
-        run: echo "Incident Response: ${{ steps.create_incident.outputs.incident_response }}"
+          --data '{"short_description": "This is a test incident created by GitHub Actions.","urgency":"2","impact":"2"}'
