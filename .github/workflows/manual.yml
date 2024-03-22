@@ -19,4 +19,9 @@ jobs:
           --user "${SERVICE_NOW_USERNAME}:${SERVICE_NOW_PASSWORD}" \
           --header "Accept:application/json" \
           --header "Content-Type:application/json" \
-          --data '{"short_description": "This is a test incident created by GitHub Actions.","urgency":"2","impact":"2"}'
+          --data '{
+            "short_description": "Incident created via GitHub Actions",
+            "urgency": "2",
+            "impact": "2",
+            "category": "software"
+          }'
