@@ -32,8 +32,8 @@ jobs:
              -d "{
                   sysparm_quantity: 1,
                   variables: {
-                    \"vm_count\": \"${{ env.VM_COUNT }}\",
-                    \"vm_size\": \"${{ env.VM_SIZE }}\"
+                    vm_count: '1',
+                    vm_size: 'Standard_F1'
                   }
                  }"
       env:
