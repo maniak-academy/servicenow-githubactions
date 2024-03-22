@@ -23,10 +23,9 @@ jobs:
         echo "VM_SIZE=$(jq -r '.vm_size' terraform.auto.tfvars)" >> $GITHUB_ENV
       shell: bash
 
-
     - name: Update and Order Catalog Item in ServiceNow
       run: |
-        curl -X POST "https://${{ secrets.SERVICE_NOW_INSTANCE }}/api/sn_sc/servicecatalog/items/d101217d973002103671341e6253afdf/versioning/checkout" \
+        curl -X POST "https://${{ secrets.SERVICE_NOW_INSTANCE }}/api/sn_sc/v1/servicecatalog/items/d101217d973002103671341e6253afdf/order_now" \
              -u ${{ secrets.SERVICE_NOW_USERNAME }}:${{ secrets.SERVICE_NOW_PASSWORD }} \
              -H "Accept:application/json" \
              -H "Content-Type:application/json" \
