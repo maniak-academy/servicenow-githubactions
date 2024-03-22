@@ -1,4 +1,4 @@
 {
-"vm_count" = "2"
-"vm_size" = "Standard_F1"
+  "vm_count": "1",
+  "vm_size": "Standard_F1"
 }
