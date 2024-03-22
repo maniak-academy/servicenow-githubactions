@@ -20,3 +20,14 @@ jobs:
           --header "Accept:application/json" \
           --header "Content-Type:application/json" \
           --data '{"short_description": "This is a test incident created by GitHub Actions.","urgency":"2","impact":"2"}'
+
+      - name: Check Incident Status in ServiceNow
+        env:
+          SERVICE_NOW_INSTANCE: ${{ secrets.SERVICE_NOW_INSTANCE }}
+          SERVICE_NOW_USERNAME: ${{ secrets.SERVICE_NOW_USERNAME }}
+          SERVICE_NOW_PASSWORD: ${{ secrets.SERVICE_NOW_PASSWORD }}
+        run: |
+          curl -X GET "https://${SERVICE_NOW_INSTANCE}.service-now.com/api/now/table/incident?sysparm_query=number=INC0012345" \
+          --user "${SERVICE_NOW_USERNAME}:${SERVICE_NOW_PASSWORD}" \
+          --header "Accept:application/json" \
+          | jq '.result[0].state'
