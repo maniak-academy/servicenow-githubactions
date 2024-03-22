@@ -10,18 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create Incident in ServiceNow
+        id: create_incident
         env:
           SERVICE_NOW_INSTANCE: ${{ secrets.SERVICE_NOW_INSTANCE }}
           SERVICE_NOW_USERNAME: ${{ secrets.SERVICE_NOW_USERNAME }}
           SERVICE_NOW_PASSWORD: ${{ secrets.SERVICE_NOW_PASSWORD }}
         run: |
-          curl -X POST "https://${SERVICE_NOW_INSTANCE}.service-now.com/api/now/table/incident" \
+          response=$(curl -X POST "https://${SERVICE_NOW_INSTANCE}.service-now.com/api/now/table/incident" \
           --user "${SERVICE_NOW_USERNAME}:${SERVICE_NOW_PASSWORD}" \
           --header "Accept:application/json" \
           --header "Content-Type:application/json" \
-          --data '{
-            "short_description": "Incident created via GitHub Actions",
-            "urgency": "2",
-            "impact": "2",
-            "category": "software"
-          }'
+          --data '{"short_description": "Incident created via GitHub Actions", "urgency": "2", "impact": "2", "category": "software"}')
+          echo "::set-output name=incident_response::$response"
+      - name: Install jq
+        run: sudo apt-get install jq
+      - name: Log Incident Creation Response
+        run: |
+          echo "Incident Response: ${{ steps.create_incident.outputs.incident_response }}"
+          echo "${{ steps.create_incident.outputs.incident_response }}" | jq .
